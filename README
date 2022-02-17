@@ -1,0 +1,61 @@
+Menan Yasemin 336CC
+APD - Tema 2
+
+In this project I have implemented a paralell program that processes a list of
+documents using the Map-Reduce model and orders the documents by their 
+calculated rank.
+
+----------------------------- Project structure -------------------------------
+
+I created the following classes:
+
+-> Tema2 
+    - the entry point of the project
+
+-> Coordinator 
+    - the main thread which creates the Map and Reduce Tasks and sends them
+      to the workers to make the operations
+
+-> TaskMap
+    - class which contains the required data for the Map operation
+
+-> MapRunnable
+    - class executed by the Fork/Join framework for the Map operations,
+    where the fragments are adjusted if they begin or end in the middle of
+    a word and where the HashMap which contains the fragment's words is created
+
+-> TaskReduce
+    - class which contains the required data for the Reduce operation
+
+-> ReduceRunnable
+    - class executed by the Fork/Join framework for the Map operations, which
+     combines all the HashMaps of the given file and calculates the rank
+
+------------------------------- Project flow --------------------------------
+
+The project receives from the command line the number of workers, the input file
+which contains the list of documents and the output file in which the results
+will be written, and then scans and saves the data contained in the input file.
+
+To manage the paralell processing of the documents, I have decided to use the
+Replicated Workers pattern because the number of Map Tasks each file is split
+into can be larger than the number of workers given at the command line.
+
+To implement the Replicated Workers model in Java I used the Fork/Join framework
+to split the tasks. 
+
+The read data is given to a coordinator, which manages the Map-Reduce model:
+
+- splits each file into fragments and saves the data in a Map Task
+
+- assigns the Map Tasks to the workers to make adjustments to the fragments if
+required and creates a map from the words found in the fragment
+
+- collects the Map Tasks coresponding to each file in a Reduce Task
+
+- assigns the Reduce Tasks the workers to combine the words maps resulted from
+the Map operations and computes the rank of each file and puts it in the output
+map along with the file
+
+- sorts the hashmap in descending order by rank and writes the String results
+to the output file
